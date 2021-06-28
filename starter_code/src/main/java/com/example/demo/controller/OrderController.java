@@ -18,15 +18,13 @@ import com.example.demo.repository.UserRepository;
 @RestController
 @RequestMapping("/api/order")
 public class OrderController {
-	
-	
+
 	@Autowired
 	private UserRepository userRepository;
 	
 	@Autowired
 	private UserOrderRepository userOrderRepository;
-	
-	
+
 	@PostMapping("/submit/{username}")
 	public ResponseEntity<UserOrder> submit(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
