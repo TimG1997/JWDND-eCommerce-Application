@@ -25,8 +25,8 @@ public class UserController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UserController.class.getSimpleName());
 
-	private static final String USER_CREATION_FAILED = "User creation failed due to insufficient password length or wrong password confirmation";
-	private static final String USER_CREATION_SUCCESSFUL = "User creation successful";
+	private static final String USER_CREATION_FAILED = "User (name: {}) creation failed due to insufficient password length or wrong password confirmation";
+	private static final String USER_CREATION_SUCCESSFUL = "User (name: {}) creation successful";
 
 	@Autowired
 	private UserRepository userRepository;
@@ -60,14 +60,14 @@ public class UserController {
 				!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword());
 
 		if(userCreationRequestNotMeetingRequirements){
-			LOG.warn(USER_CREATION_FAILED);
+			LOG.warn(USER_CREATION_FAILED, createUserRequest.getUsername());
 
 			return ResponseEntity.badRequest().build();
 		}
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 		userRepository.save(user);
 
-		LOG.info(USER_CREATION_SUCCESSFUL);
+		LOG.info(USER_CREATION_SUCCESSFUL, createUserRequest.getUsername());
 
 		return ResponseEntity.ok(user);
 	}
