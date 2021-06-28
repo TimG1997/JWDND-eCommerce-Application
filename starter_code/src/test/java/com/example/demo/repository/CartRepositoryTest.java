@@ -7,11 +7,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.math.BigDecimal;
 
 @DataJpaTest
+@DirtiesContext
 public class CartRepositoryTest {
+
+    private static final String USER = "user";
+    private static final String PASSWORD = "password";
 
     @Autowired
     private CartRepository cartRepository;
@@ -24,8 +29,8 @@ public class CartRepositoryTest {
     @BeforeEach
     public void beforeClass(){
         user = new User();
-        user.setUsername("user");
-        user.setPassword("password");
+        user.setUsername(USER);
+        user.setPassword(PASSWORD);
 
         Cart cart = new Cart();
         cart.setUser(user);
