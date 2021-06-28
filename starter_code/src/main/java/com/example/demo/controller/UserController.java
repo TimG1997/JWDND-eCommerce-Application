@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +22,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	
+
+	private static final Logger LOG = LoggerFactory.getLogger(UserController.class.getSimpleName());
+
+	private static final String USER_CREATION_FAILED = "User creation failed due to insufficient password length or wrong password confirmation";
+	private static final String USER_CREATION_SUCCESSFUL = "User creation successful";
+
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -48,12 +55,20 @@ public class UserController {
 		Cart cart = new Cart();
 		cartRepository.save(cart);
 		user.setCart(cart);
-		if(createUserRequest.getPassword().length()<7 ||
-				!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
+
+		boolean userCreationRequestNotMeetingRequirements = createUserRequest.getPassword().length() < 7 ||
+				!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword());
+
+		if(userCreationRequestNotMeetingRequirements){
+			LOG.warn(USER_CREATION_FAILED);
+
 			return ResponseEntity.badRequest().build();
 		}
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 		userRepository.save(user);
+
+		LOG.info(USER_CREATION_SUCCESSFUL);
+
 		return ResponseEntity.ok(user);
 	}
 	
